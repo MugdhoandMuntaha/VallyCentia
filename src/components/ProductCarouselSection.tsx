@@ -65,9 +65,9 @@ export default function ProductCarouselSection({
             <div
                 className="section-header-row"
                 style={{
-                    maxWidth: '1400px',
+                    maxWidth: '1540px',
                     margin: '0 auto',
-                    padding: '0 48px',
+                    padding: '0 80px',
                     display: 'flex',
                     alignItems: 'flex-start',
                     justifyContent: 'space-between',
@@ -130,7 +130,7 @@ export default function ProductCarouselSection({
             </div>
 
             {/* ── Scrollable Cards Row ── */}
-            <div style={{ position: 'relative', maxWidth: '1400px', margin: '0 auto' }}>
+            <div style={{ position: 'relative', maxWidth: '1540px', margin: '0 auto' }}>
                 {/* Left Arrow */}
                 {canScrollLeft && (
                     <button
@@ -138,7 +138,7 @@ export default function ProductCarouselSection({
                         className="carousel-arrow"
                         style={{
                             position: 'absolute',
-                            left: '8px',
+                            left: '24px',
                             top: '50%',
                             transform: 'translateY(-50%)',
                             width: '44px',
@@ -172,7 +172,7 @@ export default function ProductCarouselSection({
                         className="carousel-arrow"
                         style={{
                             position: 'absolute',
-                            right: '8px',
+                            right: '24px',
                             top: '50%',
                             transform: 'translateY(-50%)',
                             width: '44px',
@@ -200,7 +200,7 @@ export default function ProductCarouselSection({
                 )}
 
                 {/* Cards Container */}
-                <div className="carousel-cards-container" style={{ padding: '0 48px', overflow: 'hidden' }}>
+                <div className="carousel-cards-container" style={{ padding: '0 80px', overflow: 'hidden' }}>
                     <div
                         ref={scrollRef}
                         onScroll={checkScroll}
@@ -223,6 +223,7 @@ export default function ProductCarouselSection({
                                 style={{
                                     minWidth: 'calc((100% - 60px) / 4)',
                                     maxWidth: 'calc((100% - 60px) / 4)',
+                                    height: '532px',
                                     background: '#ffffff',
                                     borderRadius: '12px',
                                     border: '1px solid #f0f0f0',
@@ -305,7 +306,7 @@ export default function ProductCarouselSection({
                                     style={{
                                         position: 'relative',
                                         width: '100%',
-                                        height: '280px',
+                                        height: '50%',
                                         background: '#f8f6f3',
                                         overflow: 'hidden',
                                     }}
@@ -327,8 +328,8 @@ export default function ProductCarouselSection({
                                         className="card-title"
                                         style={{
                                             fontFamily: "'Inter', sans-serif",
-                                            fontSize: '13px',
-                                            fontWeight: 600,
+                                            fontSize: '16px',
+                                            fontWeight: 700,
                                             color: '#1a1a1a',
                                             lineHeight: 1.4,
                                             marginBottom: '4px',
@@ -336,6 +337,7 @@ export default function ProductCarouselSection({
                                             WebkitLineClamp: 2,
                                             WebkitBoxOrient: 'vertical',
                                             overflow: 'hidden',
+                                            textOverflow: 'ellipsis',
                                         }}
                                     >
                                         {product.title}
@@ -346,7 +348,7 @@ export default function ProductCarouselSection({
                                         className="card-desc"
                                         style={{
                                             fontFamily: "'Inter', sans-serif",
-                                            fontSize: '11px',
+                                            fontSize: '13px',
                                             color: '#888',
                                             lineHeight: 1.4,
                                             marginBottom: '12px',
@@ -354,6 +356,7 @@ export default function ProductCarouselSection({
                                             WebkitLineClamp: 2,
                                             WebkitBoxOrient: 'vertical',
                                             overflow: 'hidden',
+                                            textOverflow: 'ellipsis',
                                         }}
                                     >
                                         {product.description}
@@ -364,9 +367,9 @@ export default function ProductCarouselSection({
                                         <div
                                             style={{
                                                 display: 'flex',
-                                                alignItems: 'baseline',
-                                                gap: '8px',
-                                                marginBottom: '2px',
+                                                flexDirection: 'column',
+                                                gap: '4px',
+                                                marginBottom: '8px',
                                             }}
                                         >
                                             <span
@@ -381,31 +384,35 @@ export default function ProductCarouselSection({
                                             >
                                                 ৳{product.price}
                                             </span>
-                                            {product.originalPrice != null && product.originalPrice > 0 && (
-                                                <span
-                                                    className="card-original-price"
-                                                    style={{
-                                                        fontFamily: "'Inter', sans-serif",
-                                                        fontSize: '14px',
-                                                        color: '#bbb',
-                                                        textDecoration: 'line-through',
-                                                        lineHeight: 1,
-                                                    }}
-                                                >
-                                                    ৳{product.originalPrice}
-                                                </span>
-                                            )}
-                                            {product.discountPercent != null && product.discountPercent > 0 && (
-                                                <span
-                                                    style={{
-                                                        fontFamily: "'Inter', sans-serif",
-                                                        fontSize: '12px',
-                                                        fontWeight: 600,
-                                                        color: '#e67e22',
-                                                    }}
-                                                >
-                                                    {Math.ceil(product.discountPercent)}% OFF
-                                                </span>
+                                            {(product.originalPrice != null && product.originalPrice > 0 || (product.discountPercent != null && product.discountPercent > 0)) && (
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                    {product.originalPrice != null && product.originalPrice > 0 && (
+                                                        <span
+                                                            className="card-original-price"
+                                                            style={{
+                                                                fontFamily: "'Inter', sans-serif",
+                                                                fontSize: '14px',
+                                                                color: '#bbb',
+                                                                textDecoration: 'line-through',
+                                                                lineHeight: 1,
+                                                            }}
+                                                        >
+                                                            ৳{product.originalPrice}
+                                                        </span>
+                                                    )}
+                                                    {product.discountPercent != null && product.discountPercent > 0 && (
+                                                        <span
+                                                            style={{
+                                                                fontFamily: "'Inter', sans-serif",
+                                                                fontSize: '12px',
+                                                                fontWeight: 600,
+                                                                color: '#e67e22',
+                                                            }}
+                                                        >
+                                                            {Math.ceil(product.discountPercent)}% OFF
+                                                        </span>
+                                                    )}
+                                                </div>
                                             )}
                                         </div>
 

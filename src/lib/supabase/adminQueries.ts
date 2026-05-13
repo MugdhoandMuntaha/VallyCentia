@@ -725,6 +725,7 @@ export interface AdminHeroSlide {
     cta_text: string | null;
     cta_link: string | null;
     image_url: string;
+    mobile_image_url: string | null;
     image_alt: string | null;
     background_color: string | null;
     text_color: string | null;
@@ -742,6 +743,7 @@ export interface HeroSlideFormData {
     cta_text: string;
     cta_link: string;
     image_url: string;
+    mobile_image_url: string;
     image_alt: string;
     background_color: string;
     text_color: string;
@@ -781,6 +783,7 @@ export async function createHeroSlide(data: HeroSlideFormData): Promise<{ id: st
             cta_text: data.cta_text || null,
             cta_link: data.cta_link || null,
             image_url: data.image_url,
+            mobile_image_url: data.mobile_image_url || null,
             image_alt: data.image_alt || null,
             background_color: data.background_color || null,
             text_color: data.text_color || '#ffffff',
@@ -809,6 +812,7 @@ export async function updateHeroSlide(id: string, data: HeroSlideFormData): Prom
             cta_text: data.cta_text || null,
             cta_link: data.cta_link || null,
             image_url: data.image_url,
+            mobile_image_url: data.mobile_image_url || null,
             image_alt: data.image_alt || null,
             background_color: data.background_color || null,
             text_color: data.text_color || '#ffffff',

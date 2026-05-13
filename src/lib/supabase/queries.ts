@@ -11,6 +11,7 @@ export interface HeroSlide {
     cta_text: string | null;
     cta_link: string | null;
     image_url: string;
+    mobile_image_url: string | null;
     image_alt: string | null;
     background_color: string | null;
     text_color: string | null;
@@ -204,7 +205,7 @@ export async function getHeroSlides(): Promise<HeroSlide[]> {
     const supabase = getBrowserClient();
     const { data, error } = await supabase
         .from('hero_slides')
-        .select('id, title, subtitle, cta_text, cta_link, image_url, image_alt, background_color, text_color')
+        .select('id, title, subtitle, cta_text, cta_link, image_url, mobile_image_url, image_alt, background_color, text_color')
         .eq('is_active', true)
         .order('sort_order', { ascending: true });
 
@@ -250,6 +251,11 @@ export async function getHomepageSections(): Promise<HomepageSection[]> {
 
     if (secError || !sections) {
         console.error('Error fetching homepage sections:', secError);
+        try {
+            console.error('Error Stringified:', JSON.stringify(secError, Object.getOwnPropertyNames(secError || {}), 2));
+        } catch (e) {
+            console.error('Could not stringify error object');
+        }
         return [];
     }
 
@@ -383,6 +389,11 @@ export async function getProductCards(filters?: ProductFilters): Promise<Product
 
     if (error) {
         console.error('Error fetching product cards:', error);
+        try {
+            console.error('Error Stringified:', JSON.stringify(error, Object.getOwnPropertyNames(error), 2));
+        } catch (e) {
+            console.error('Could not stringify error object');
+        }
         return [];
     }
     return data || [];
@@ -398,11 +409,20 @@ export async function getProductBySlug(slug: string): Promise<ProductDetail | nu
         .from('v_product_detail')
         .select('*')
         .eq('slug', slug)
-        .eq('is_active', true)
-        .single();
+        .maybeSingle();
 
-    if (error || !data) {
+    if (error) {
         console.error('Error fetching product detail:', error);
+        try {
+            console.error('Error Stringified:', JSON.stringify(error, Object.getOwnPropertyNames(error), 2));
+        } catch (e) {
+            console.error('Could not stringify error object');
+        }
+        return null;
+    }
+
+    if (!data) {
+        console.warn(`Product not found for slug: ${slug}`);
         return null;
     }
 

@@ -6,6 +6,7 @@ import Link from 'next/link';
 
 interface HeroSlide {
     image: string;
+    mobileImage?: string;
     alt: string;
     background: string;
     link?: string;
@@ -20,16 +21,19 @@ const defaultSlides: HeroSlide[] = [
         image: 'https://ibb.co.com/tpYyHXK7',
         alt: 'Hair Strengthening Spray',
         background: 'linear-gradient(135deg, #e8d5b7 0%, #f0e4cf 30%, #f5eadb 60%, #eeddc4 100%)',
+        link: '/shop',
     },
     {
         image: 'https://images.unsplash.com/photo-1556228578-0d85b1a4d571?w=1400&q=80',
         alt: 'Anti Acne Face Wash',
         background: 'linear-gradient(135deg, #d4e8d0 0%, #e2f0de 30%, #eaf5e6 60%, #d8ead4 100%)',
+        link: '/shop',
     },
     {
         image: 'https://images.unsplash.com/photo-1611930022073-b7a4ba5fcccd?w=1400&q=80',
         alt: 'Daily Sunscreen SPF 50+',
         background: 'linear-gradient(135deg, #fce4b8 0%, #fdedc8 30%, #fff3d8 60%, #fae5b6 100%)',
+        link: '/shop',
     },
 ];
 
@@ -80,7 +84,7 @@ export default function HeroCarousel({ slides: propSlides }: HeroCarouselProps) 
         setIsDragging(true);
         setDragStartX(e.clientX);
         setDragDelta(0);
-        (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+        // Removed setPointerCapture to allow clicks to bubble correctly to child Links
     };
 
     const handlePointerMove = (e: React.PointerEvent) => {
@@ -124,79 +128,107 @@ export default function HeroCarousel({ slides: propSlides }: HeroCarouselProps) 
                 cursor: isDragging ? 'grabbing' : 'grab',
                 userSelect: 'none',
                 touchAction: 'pan-y',
+                transition: 'none',
             }}
             onPointerDown={handlePointerDown}
             onPointerMove={handlePointerMove}
             onPointerUp={handlePointerUp}
             onPointerLeave={handlePointerUp}
         >
-            {/* Full-width Image — wrapped in Link if slide has a link */}
-            {(() => {
-                const slideContent = (
+            {/* Slide Content */}
+            <div
+                className="hero-slide-content"
+                style={{
+                    width: '100%',
+                    lineHeight: 0,
+                    transition: 'none',
+                }}
+            >
+                {imgError.has(current) ? (
                     <div
-                        className="hero-slide-content"
                         style={{
-                            position: 'relative',
                             width: '100%',
-                            minHeight: '560px',
-                            transform: isDragging ? `translateX(${dragDelta}px)` : undefined,
+                            aspectRatio: '1920/600',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            padding: '40px',
                         }}
                     >
-                        {imgError.has(current) ? (
-                            <div
-                                style={{
-                                    position: 'absolute',
-                                    inset: 0,
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    padding: '40px',
-                                }}
-                            >
-                                <span
-                                    style={{
-                                        fontFamily: "'Outfit', sans-serif",
-                                        fontSize: '32px',
-                                        fontWeight: 700,
-                                        color: '#4a3f35',
-                                        textAlign: 'center',
-                                        lineHeight: 1.3,
-                                    }}
-                                >
-                                    {slide.alt}
-                                </span>
-                            </div>
-                        ) : (
+                        <span
+                            style={{
+                                fontFamily: "'Outfit', sans-serif",
+                                fontSize: '32px',
+                                fontWeight: 700,
+                                color: '#4a3f35',
+                                textAlign: 'center',
+                                lineHeight: 1.3,
+                            }}
+                        >
+                            {slide.alt}
+                        </span>
+                    </div>
+                ) : (
+                    <>
+                        {/* Desktop Image */}
+                        <div className="desktop-hero-image">
                             <Image
                                 src={slide.image}
                                 alt={slide.alt}
-                                fill
+                                width={1920}
+                                height={600}
                                 priority
                                 sizes="100vw"
                                 style={{
-                                    objectFit: 'cover',
-                                    objectPosition: 'center',
+                                    width: '100%',
+                                    height: 'auto',
+                                    display: 'block',
                                 }}
                                 draggable={false}
                                 onError={() => handleImgError(current)}
                             />
-                        )}
-                    </div>
-                );
+                        </div>
 
-                return slide.link ? (
-                    <Link
-                        href={slide.link}
-                        onMouseDown={handleClickDown}
-                        onMouseMove={handleClickMove}
-                        onClick={handleClick}
-                        style={{ display: 'block', textDecoration: 'none', color: 'inherit' }}
-                        draggable={false}
-                    >
-                        {slideContent}
-                    </Link>
-                ) : slideContent;
-            })()}
+                        {/* Mobile Image */}
+                        <div className="mobile-hero-image">
+                            <Image
+                                src={slide.mobileImage || slide.image}
+                                alt={slide.alt}
+                                width={800}
+                                height={800}
+                                priority
+                                sizes="100vw"
+                                style={{
+                                    width: '100%',
+                                    height: '100%',
+                                    objectFit: 'cover',
+                                    display: 'block',
+                                }}
+                                draggable={false}
+                                onError={() => handleImgError(current)}
+                            />
+                        </div>
+                    </>
+                )}
+            </div>
+
+            {/* Click Overlay Link — makes the entire slide clickable */}
+            {slide.link && (
+                <Link
+                    href={slide.link}
+                    onMouseDown={handleClickDown}
+                    onMouseMove={handleClickMove}
+                    onClick={handleClick}
+                    style={{
+                        position: 'absolute',
+                        inset: 0,
+                        zIndex: 5,
+                        cursor: 'pointer',
+                    }}
+                    draggable={false}
+                    aria-label={slide.alt}
+                />
+            )}
 
             {/* Carousel Dots */}
             <div
@@ -210,6 +242,7 @@ export default function HeroCarousel({ slides: propSlides }: HeroCarouselProps) 
                     left: 0,
                     right: 0,
                     zIndex: 10,
+                    pointerEvents: 'none',
                 }}
             >
                 {slides.map((_, idx) => (
@@ -218,14 +251,6 @@ export default function HeroCarousel({ slides: propSlides }: HeroCarouselProps) 
                         onClick={() => {
                             goTo(idx);
                             resetAutoPlay();
-                        }}
-                        onMouseEnter={(e) => {
-                            const dot = e.currentTarget.querySelector('span') as HTMLElement;
-                            if (dot) dot.style.transform = 'scale(1.5)';
-                        }}
-                        onMouseLeave={(e) => {
-                            const dot = e.currentTarget.querySelector('span') as HTMLElement;
-                            if (dot) dot.style.transform = idx === current ? 'scale(1.2)' : 'scale(1)';
                         }}
                         style={{
                             width: '20px',
@@ -237,18 +262,20 @@ export default function HeroCarousel({ slides: propSlides }: HeroCarouselProps) 
                             border: 'none',
                             cursor: 'pointer',
                             padding: 0,
+                            pointerEvents: 'auto',
                         }}
                         aria-label={`Slide ${idx + 1}`}
                     >
                         <span
                             style={{
-                                width: idx === current ? '10px' : '8px',
-                                height: idx === current ? '10px' : '8px',
+                                width: '7px',
+                                height: '7px',
                                 borderRadius: '50%',
-                                background: idx === current ? '#4a3f35' : '#c4b49e',
+                                background: idx === current ? '#1a1a1a' : 'transparent',
+                                border: `1.5px solid ${idx === current ? '#1a1a1a' : 'rgba(26, 26, 26, 0.4)'}`,
                                 display: 'block',
                                 transition: 'all 0.3s ease',
-                                transform: idx === current ? 'scale(1.2)' : 'scale(1)',
+                                transform: idx === current ? 'scale(1.1)' : 'scale(1)',
                             }}
                         />
                     </button>

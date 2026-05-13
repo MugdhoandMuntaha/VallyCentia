@@ -585,6 +585,7 @@ function ShopContent() {
                                 key={`${product.id}-${index}`}
                                 href={`/product/${product.slug}`}
                                 style={{
+                                    height: '532px',
                                     background: '#ffffff',
                                     borderRadius: '12px',
                                     border: '1px solid #f0f0f0',
@@ -611,7 +612,7 @@ function ShopContent() {
                                     style={{
                                         position: 'relative',
                                         width: '100%',
-                                        height: '240px',
+                                        height: '50%',
                                         background: '#f8f6f3',
                                         overflow: 'hidden',
                                     }}
@@ -732,8 +733,8 @@ function ShopContent() {
                                     <h3
                                         style={{
                                             fontFamily: "'Inter', sans-serif",
-                                            fontSize: '13px',
-                                            fontWeight: 600,
+                                            fontSize: '16px',
+                                            fontWeight: 700,
                                             color: '#1a1a1a',
                                             lineHeight: 1.4,
                                             marginBottom: '4px',
@@ -741,6 +742,7 @@ function ShopContent() {
                                             WebkitLineClamp: 2,
                                             WebkitBoxOrient: 'vertical',
                                             overflow: 'hidden',
+                                            textOverflow: 'ellipsis',
                                         }}
                                     >
                                         {product.title}
@@ -750,7 +752,7 @@ function ShopContent() {
                                     <p
                                         style={{
                                             fontFamily: "'Inter', sans-serif",
-                                            fontSize: '11px',
+                                            fontSize: '13px',
                                             color: '#888',
                                             lineHeight: 1.4,
                                             marginBottom: '12px',
@@ -758,6 +760,7 @@ function ShopContent() {
                                             WebkitLineClamp: 2,
                                             WebkitBoxOrient: 'vertical',
                                             overflow: 'hidden',
+                                            textOverflow: 'ellipsis',
                                         }}
                                     >
                                         {product.description}
@@ -768,9 +771,9 @@ function ShopContent() {
                                         <div
                                             style={{
                                                 display: 'flex',
-                                                alignItems: 'baseline',
-                                                gap: '8px',
-                                                marginBottom: '2px',
+                                                flexDirection: 'column',
+                                                gap: '4px',
+                                                marginBottom: '8px',
                                             }}
                                         >
                                             <span
@@ -784,33 +787,35 @@ function ShopContent() {
                                             >
                                                 ৳{product.price}
                                             </span>
-                                            {product.originalPrice != null &&
-                                                product.originalPrice > 0 && (
-                                                    <span
-                                                        style={{
-                                                            fontFamily: "'Inter', sans-serif",
-                                                            fontSize: '14px',
-                                                            color: '#bbb',
-                                                            textDecoration: 'line-through',
-                                                            lineHeight: 1,
-                                                        }}
-                                                    >
-                                                        ৳{product.originalPrice}
-                                                    </span>
-                                                )}
-                                            {product.discountPercent != null &&
-                                                product.discountPercent > 0 && (
-                                                    <span
-                                                        style={{
-                                                            fontFamily: "'Inter', sans-serif",
-                                                            fontSize: '12px',
-                                                            fontWeight: 600,
-                                                            color: '#e67e22',
-                                                        }}
-                                                    >
-                                                        {Math.ceil(product.discountPercent)}% OFF
-                                                    </span>
-                                                )}
+                                            {((product.originalPrice != null && product.originalPrice > 0) || (product.discountPercent != null && product.discountPercent > 0)) && (
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                    {product.originalPrice != null && product.originalPrice > 0 && (
+                                                        <span
+                                                            style={{
+                                                                fontFamily: "'Inter', sans-serif",
+                                                                fontSize: '14px',
+                                                                color: '#bbb',
+                                                                textDecoration: 'line-through',
+                                                                lineHeight: 1,
+                                                            }}
+                                                        >
+                                                            ৳{product.originalPrice}
+                                                        </span>
+                                                    )}
+                                                    {product.discountPercent != null && product.discountPercent > 0 && (
+                                                        <span
+                                                            style={{
+                                                                fontFamily: "'Inter', sans-serif",
+                                                                fontSize: '12px',
+                                                                fontWeight: 600,
+                                                                color: '#e67e22',
+                                                            }}
+                                                        >
+                                                            {Math.ceil(product.discountPercent)}% OFF
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            )}
                                         </div>
 
                                         {/* Coupon */}

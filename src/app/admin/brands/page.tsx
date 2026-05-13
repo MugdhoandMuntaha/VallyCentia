@@ -101,17 +101,22 @@ export default function AdminBrandsPage() {
         setSaving(true);
         setFormError('');
 
-        if (editId) {
-            const { error } = await updateBrand(editId, form);
-            if (error) { setFormError(error); setSaving(false); return; }
-        } else {
-            const { error } = await createBrand(form);
-            if (error) { setFormError(error); setSaving(false); return; }
-        }
+        try {
+            if (editId) {
+                const { error } = await updateBrand(editId, form);
+                if (error) { setFormError(error); return; }
+            } else {
+                const { error } = await createBrand(form);
+                if (error) { setFormError(error); return; }
+            }
 
-        setSaving(false);
-        setModalOpen(false);
-        await loadBrands();
+            setModalOpen(false);
+            await loadBrands();
+        } catch (err: any) {
+            setFormError(err.message || 'An error occurred while saving');
+        } finally {
+            setSaving(false);
+        }
     }
 
     /* ===== Delete ===== */

@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { Mail, MapPin, Phone, Facebook, Instagram, Twitter, Youtube } from 'lucide-react';
+import Image from 'next/image';
 
 const footerLinks = {
     shop: [
@@ -40,7 +41,7 @@ export default function Footer() {
     return (
         <footer
             style={{
-                background: 'var(--color-bg-secondary)',
+                background: '#000000',
                 borderTop: '1px solid var(--color-border)',
             }}
         >
@@ -58,27 +59,14 @@ export default function Footer() {
             >
                 {/* Brand Column */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-                    <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: '2px' }}>
-                        <span
-                            style={{
-                                fontFamily: "'Outfit', sans-serif",
-                                fontSize: '22px',
-                                fontWeight: 800,
-                                color: 'var(--color-text-primary)',
-                            }}
-                        >
-                            VALLEY
-                        </span>
-                        <span
-                            style={{
-                                fontFamily: "'Outfit', sans-serif",
-                                fontSize: '22px',
-                                fontWeight: 300,
-                                color: 'var(--color-accent)',
-                            }}
-                        >
-                            CENTIA
-                        </span>
+                    <Link href="/" style={{ display: 'inline-flex', alignItems: 'center' }}>
+                        <Image
+                            src="/logo2.png"
+                            alt="ValleyCentia Logo"
+                            width={180}
+                            height={45}
+                            style={{ height: '40px', width: 'auto', objectFit: 'contain' }}
+                        />
                     </Link>
                     <p
                         style={{

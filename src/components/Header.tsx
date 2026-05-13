@@ -7,7 +7,7 @@ import { Search, ShoppingBag, User, Menu, X, ChevronDown, ChevronLeft, ArrowRigh
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCart } from '@/lib/CartContext';
 import { useAuth } from '@/lib/AuthContext';
-import { getProductCards, getNavLinks } from '@/lib/supabase/queries';
+import { getProductCards, getNavLinks, getSiteSetting } from '@/lib/supabase/queries';
 import type { NavLinkItem } from '@/lib/supabase/queries';
 
 interface NavLink {
@@ -66,6 +66,10 @@ export default function Header() {
     const recScrollRef = useRef<HTMLDivElement>(null);
     const [allProducts, setAllProducts] = useState<SearchProduct[]>([]);
     const [navLinks, setNavLinks] = useState<NavLink[]>([]);
+    const [headerSettings, setHeaderSettings] = useState<{ show_announcement: boolean; announcement_text: string }>({
+        show_announcement: true,
+        announcement_text: 'Free shipping on orders above ৳499',
+    });
 
     // Fetch products and nav links from Supabase
     useEffect(() => {
@@ -87,6 +91,10 @@ export default function Header() {
         // Fetch nav links from DB
         getNavLinks().then(items => {
             setNavLinks(toNavLinks(items));
+        });
+        // Fetch header settings
+        getSiteSetting('header_settings').then(val => {
+            if (val) setHeaderSettings(val as any);
         });
     }, []);
 
@@ -183,21 +191,23 @@ export default function Header() {
     return (
         <>
             {/* ===== ROW 1: Announcement Bar ===== */}
-            <div
-                style={{
-                    background: '#1a1a1a',
-                    padding: '7px 0',
-                    textAlign: 'center',
-                    fontSize: '12px',
-                    fontWeight: 500,
-                    color: 'white',
-                    letterSpacing: '0.3px',
-                    borderBottom: '1px solid #2a2a2a',
-                    fontFamily: "'Inter', sans-serif",
-                }}
-            >
-                Free shipping on orders above ৳499
-            </div>
+            {headerSettings.show_announcement && (
+                <div
+                    style={{
+                        background: '#1a1a1a',
+                        padding: '7px 0',
+                        textAlign: 'center',
+                        fontSize: '12px',
+                        fontWeight: 500,
+                        color: 'white',
+                        letterSpacing: '0.3px',
+                        borderBottom: '1px solid #2a2a2a',
+                        fontFamily: "'Inter', sans-serif",
+                    }}
+                >
+                    {headerSettings.announcement_text}
+                </div>
+            )}
 
             {/* ===== ROW 2: Main Header ===== */}
             <header
@@ -248,37 +258,17 @@ export default function Header() {
                             alignItems: 'center',
                             flexShrink: 0,
                             textDecoration: 'none',
-                            position: 'absolute',
-                            left: '46px'
                         }}
                     >
-                        {/* <Image src="/logo.png" alt="Logo" width={150} height={120} /> */}
-                        <span
-                            style={{
-                                fontFamily: "'Outfit', sans-serif",
-                                fontSize: '22px',
-                                fontWeight: 800,
-                                letterSpacing: '3px',
-                                color: '#ffffff',
-                            }}
-                        >
-                            VALLEY
-                        </span>
-                        <span
-                            style={{
-                                fontFamily: "'Outfit', sans-serif",
-                                fontSize: '22px',
-                                fontWeight: 300,
-                                letterSpacing: '3px',
-                                color: '#d39e3cff',
-                            }}
-                        >
-                            CENTIA
-                        </span>
+                        <Image 
+                            src="/logo2.png" 
+                            alt="ValleyCentia Logo" 
+                            width={229} 
+                            height={57} 
+                            priority
+                            style={{ height: '46px', width: 'auto', objectFit: 'contain' }}
+                        />
                     </Link>
-
-
-
                     {/* Spacer */}
                     <div style={{ flex: 1 }} />
 
@@ -302,7 +292,7 @@ export default function Header() {
                                 border: searchFocused ? '1px solid #555' : '1px solid #333',
                                 padding: '0 12px',
                                 height: '34px',
-                                width: '200px',
+                                width: '280px',
                                 transition: 'border-color 0.2s ease',
                             }}
                         >
@@ -519,7 +509,7 @@ export default function Header() {
                                                                             color: '#1a1a1a',
                                                                             lineHeight: 1,
                                                                         }}>
-                                                                            Rs. {product.price}
+                                                                            ৳{product.price}
                                                                         </span>
                                                                         {product.originalPrice > 0 && (
                                                                             <span style={{
@@ -529,7 +519,7 @@ export default function Header() {
                                                                                 textDecoration: 'line-through',
                                                                                 lineHeight: 1,
                                                                             }}>
-                                                                                Rs. {product.originalPrice}
+                                                                                ৳{product.originalPrice}
                                                                             </span>
                                                                         )}
                                                                         {product.discountPercent > 0 && (
@@ -807,7 +797,7 @@ export default function Header() {
                                                                         color: '#1a1a1a',
                                                                         lineHeight: 1,
                                                                     }}>
-                                                                        Rs. {product.price}
+                                                                        ৳{product.price}
                                                                     </span>
                                                                     {product.discountPercent > 0 && (
                                                                         <span style={{
@@ -1125,7 +1115,7 @@ export default function Header() {
                                                                     fontWeight: 700,
                                                                     color: '#1a1a1a',
                                                                 }}>
-                                                                    Rs. {product.price}
+                                                                    ৳{product.price}
                                                                 </span>
                                                                 {product.originalPrice > 0 && (
                                                                     <span style={{
@@ -1134,7 +1124,7 @@ export default function Header() {
                                                                         color: '#bbb',
                                                                         textDecoration: 'line-through',
                                                                     }}>
-                                                                        Rs. {product.originalPrice}
+                                                                        ৳{product.originalPrice}
                                                                     </span>
                                                                 )}
                                                             </div>
@@ -1386,7 +1376,7 @@ export default function Header() {
                                                             {product.name}
                                                         </p>
                                                         <p style={{ margin: 0, fontSize: '12px', color: '#aaa', fontFamily: "'Inter', sans-serif" }}>
-                                                            Rs. {product.price}
+                                                            ৳{product.price}
                                                         </p>
                                                     </div>
                                                 </Link>

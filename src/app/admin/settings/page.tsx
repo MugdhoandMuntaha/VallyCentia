@@ -12,11 +12,20 @@ import {
     Loader2,
     Check,
     AlertTriangle,
+    Megaphone,
 } from 'lucide-react';
 import { getAdminSiteSettings, updateSiteSetting, type SiteSettingRow } from '@/lib/supabase/adminQueries';
 
 // Human-readable configs for each setting key
-const SETTING_META: Record<string, { label: string; icon: React.ComponentType<{ size?: number; style?: React.CSSProperties }>; fields: { key: string; label: string; type: 'number' | 'text'; suffix?: string }[] }> = {
+const SETTING_META: Record<string, { label: string; icon: React.ComponentType<{ size?: number; style?: React.CSSProperties }>; fields: { key: string; label: string; type: 'number' | 'text' | 'boolean'; suffix?: string }[] }> = {
+    header_settings: {
+        label: 'Header & Announcement',
+        icon: Megaphone,
+        fields: [
+            { key: 'show_announcement', label: 'Show Announcement Bar', type: 'boolean' },
+            { key: 'announcement_text', label: 'Announcement Text', type: 'text' },
+        ],
+    },
     free_shipping_threshold: {
         label: 'Free Shipping Threshold',
         icon: Truck,
@@ -90,14 +99,19 @@ export default function AdminSettingsPage() {
     const handleSave = async (settingKey: string) => {
         setSaving(settingKey);
         setError(null);
-        const result = await updateSiteSetting(settingKey, editValues[settingKey]);
-        setSaving(null);
-        if (result.error) {
-            setError(result.error);
-        } else {
-            setSaved(settingKey);
-            setTimeout(() => setSaved(null), 2000);
-            await loadSettings();
+        try {
+            const result = await updateSiteSetting(settingKey, editValues[settingKey]);
+            if (result.error) {
+                setError(result.error);
+            } else {
+                setSaved(settingKey);
+                setTimeout(() => setSaved(null), 2000);
+                await loadSettings();
+            }
+        } catch (err: any) {
+            setError(err.message || 'An error occurred while saving');
+        } finally {
+            setSaving(null);
         }
     };
 
@@ -242,31 +256,55 @@ export default function AdminSettingsPage() {
                                                         {field.suffix}
                                                     </span>
                                                 )}
-                                                <input
-                                                    type={field.type}
-                                                    value={String(currentValue)}
-                                                    onChange={e => {
-                                                        const val = field.type === 'number'
-                                                            ? (e.target.value === '' ? '' : Number(e.target.value))
-                                                            : e.target.value;
-                                                        handleFieldChange(setting.key, field.key, val as string | number);
-                                                    }}
-                                                    style={{
-                                                        flex: 1,
-                                                        padding: '10px 14px',
-                                                        background: 'var(--color-bg)',
-                                                        border: '1.5px solid var(--color-border)',
-                                                        borderRadius: 8,
-                                                        fontSize: 15,
-                                                        fontWeight: 600,
-                                                        color: 'var(--color-text-primary)',
-                                                        fontFamily: "'Inter', sans-serif",
-                                                        outline: 'none',
-                                                        transition: 'border-color 0.2s',
-                                                    }}
-                                                    onFocus={e => e.currentTarget.style.borderColor = 'var(--color-accent)'}
-                                                    onBlur={e => e.currentTarget.style.borderColor = 'var(--color-border)'}
-                                                />
+                                                {field.type === 'boolean' ? (
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '4px 0' }}>
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => handleFieldChange(setting.key, field.key, !currentValue)}
+                                                            style={{
+                                                                width: 44, height: 24, borderRadius: 12, border: 'none',
+                                                                background: currentValue ? 'var(--color-success, #22c55e)' : 'var(--color-bg-tertiary, #2a2a2d)',
+                                                                cursor: 'pointer', position: 'relative', transition: 'background 0.2s',
+                                                                padding: 0,
+                                                            }}
+                                                        >
+                                                            <div style={{
+                                                                width: 18, height: 18, borderRadius: '50%', background: '#fff',
+                                                                position: 'absolute', top: 3,
+                                                                left: currentValue ? 23 : 3, transition: 'left 0.2s',
+                                                            }} />
+                                                        </button>
+                                                        <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-text-primary)' }}>
+                                                            {currentValue ? 'Enabled' : 'Disabled'}
+                                                        </span>
+                                                    </div>
+                                                ) : (
+                                                    <input
+                                                        type={field.type}
+                                                        value={String(currentValue)}
+                                                        onChange={e => {
+                                                            const val = field.type === 'number'
+                                                                ? (e.target.value === '' ? '' : Number(e.target.value))
+                                                                : e.target.value;
+                                                            handleFieldChange(setting.key, field.key, val as string | number);
+                                                        }}
+                                                        style={{
+                                                            flex: 1,
+                                                            padding: '10px 14px',
+                                                            background: 'var(--color-bg)',
+                                                            border: '1.5px solid var(--color-border)',
+                                                            borderRadius: 8,
+                                                            fontSize: 15,
+                                                            fontWeight: 600,
+                                                            color: 'var(--color-text-primary)',
+                                                            fontFamily: "'Inter', sans-serif",
+                                                            outline: 'none',
+                                                            transition: 'border-color 0.2s',
+                                                        }}
+                                                        onFocus={e => e.currentTarget.style.borderColor = 'var(--color-accent)'}
+                                                        onBlur={e => e.currentTarget.style.borderColor = 'var(--color-border)'}
+                                                    />
+                                                )}
                                             </div>
                                         </div>
                                     );

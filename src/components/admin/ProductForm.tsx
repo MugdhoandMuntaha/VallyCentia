@@ -234,40 +234,46 @@ export default function ProductForm({ productId }: Props) {
 
         setSaving(true);
 
-        if (isEdit && productId) {
-            const { error } = await updateProduct(productId, finalForm);
-            if (error) {
-                alert('Error: ' + error);
-                setSaving(false);
-                return;
+        try {
+            if (isEdit && productId) {
+                const { error } = await updateProduct(productId, finalForm);
+                if (error) {
+                    alert('Error: ' + error);
+                    return;
+                }
+            } else {
+                const { error } = await createProduct(finalForm);
+                if (error) {
+                    alert('Error: ' + error);
+                    return;
+                }
             }
-        } else {
-            const { error } = await createProduct(finalForm);
-            if (error) {
-                alert('Error: ' + error);
-                setSaving(false);
-                return;
-            }
-        }
 
-        // Save coupon assignment
-        const supabase = (await import('@/lib/supabase/client')).createClient();
-        const savedProductId = isEdit ? productId : (await supabase.from('products').select('id').eq('slug', finalForm.slug).single()).data?.id;
-        if (savedProductId) {
-            // Always delete existing assignment first
-            await supabase.from('product_coupons').delete().eq('product_id', savedProductId);
-            // Insert new one if selected
-            if (assignedCouponId) {
-                await supabase.from('product_coupons').insert({
-                    product_id: savedProductId,
-                    coupon_id: assignedCouponId,
-                    coupon_price: couponPrice || null,
-                });
+            // Save coupon assignment
+            const supabase = (await import('@/lib/supabase/client')).createClient();
+            const savedProductId = isEdit ? productId : (await supabase.from('products').select('id').eq('slug', finalForm.slug).single()).data?.id;
+            
+            if (savedProductId) {
+                // Always delete existing assignment first
+                await supabase.from('product_coupons').delete().eq('product_id', savedProductId);
+                
+                // Insert new one if selected
+                if (assignedCouponId) {
+                    await supabase.from('product_coupons').insert({
+                        product_id: savedProductId,
+                        coupon_id: assignedCouponId,
+                        coupon_price: couponPrice || null,
+                    });
+                }
             }
-        }
 
-        setSaving(false);
-        router.push('/admin/products');
+            router.push('/admin/products');
+        } catch (err: any) {
+            console.error('Save error:', err);
+            alert('An unexpected error occurred: ' + (err.message || 'Unknown error'));
+        } finally {
+            setSaving(false);
+        }
     }
 
     // ========================================================================

@@ -14,7 +14,7 @@ import type { AdminHeroSlide, HeroSlideFormData } from '@/lib/supabase/adminQuer
 /* ===== Default form state ===== */
 const emptyForm: HeroSlideFormData = {
     title: '', subtitle: '', cta_text: '', cta_link: '',
-    image_url: '', image_alt: '', background_color: '',
+    image_url: '', mobile_image_url: '', image_alt: '', background_color: '',
     text_color: '#ffffff', is_active: true, sort_order: 0,
 };
 
@@ -68,6 +68,7 @@ export default function AdminHeroSlidesPage() {
             cta_text: slide.cta_text || '',
             cta_link: slide.cta_link || '',
             image_url: slide.image_url,
+            mobile_image_url: slide.mobile_image_url || '',
             image_alt: slide.image_alt || '',
             background_color: slide.background_color || '',
             text_color: slide.text_color || '#ffffff',
@@ -85,16 +86,21 @@ export default function AdminHeroSlidesPage() {
 
         setSaving(true);
         setError('');
-        if (editingId) {
-            const res = await updateHeroSlide(editingId, form);
-            if (res.error) { setError(res.error); setSaving(false); return; }
-        } else {
-            const res = await createHeroSlide(form);
-            if (res.error) { setError(res.error); setSaving(false); return; }
+        try {
+            if (editingId) {
+                const res = await updateHeroSlide(editingId, form);
+                if (res.error) { setError(res.error); return; }
+            } else {
+                const res = await createHeroSlide(form);
+                if (res.error) { setError(res.error); return; }
+            }
+            setModalOpen(false);
+            await loadSlides();
+        } catch (err: any) {
+            setError(err.message || 'An error occurred while saving');
+        } finally {
+            setSaving(false);
         }
-        setSaving(false);
-        setModalOpen(false);
-        await loadSlides();
     }
 
     // ===== Delete =====
@@ -331,23 +337,43 @@ export default function AdminHeroSlidesPage() {
                         )}
 
                         {/* Image URL + Preview */}
-                        <div style={{ marginBottom: 16 }}>
-                            <label style={labelStyle}>Image URL *</label>
-                            <input
-                                type="text"
-                                value={form.image_url}
-                                onChange={(e) => setField('image_url', e.target.value)}
-                                placeholder="https://images.unsplash.com/..."
-                                style={inputStyle}
-                            />
-                            {form.image_url && (
-                                <div style={{
-                                    position: 'relative', width: '100%', height: 140, marginTop: 8,
-                                    borderRadius: 'var(--radius-md)', overflow: 'hidden', border: '1px solid var(--color-border)',
-                                }}>
-                                    <Image src={form.image_url} alt="Preview" fill sizes="500px" style={{ objectFit: 'cover' }} />
-                                </div>
-                            )}
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
+                            <div>
+                                <label style={labelStyle}>Desktop Image URL *</label>
+                                <input
+                                    type="text"
+                                    value={form.image_url}
+                                    onChange={(e) => setField('image_url', e.target.value)}
+                                    placeholder="https://..."
+                                    style={inputStyle}
+                                />
+                                {form.image_url && (
+                                    <div style={{
+                                        position: 'relative', width: '100%', height: 100, marginTop: 8,
+                                        borderRadius: 'var(--radius-md)', overflow: 'hidden', border: '1px solid var(--color-border)',
+                                    }}>
+                                        <Image src={form.image_url} alt="Preview" fill sizes="300px" style={{ objectFit: 'cover' }} />
+                                    </div>
+                                )}
+                            </div>
+                            <div>
+                                <label style={labelStyle}>Mobile Image URL (Square)</label>
+                                <input
+                                    type="text"
+                                    value={form.mobile_image_url}
+                                    onChange={(e) => setField('mobile_image_url', e.target.value)}
+                                    placeholder="https://..."
+                                    style={inputStyle}
+                                />
+                                {form.mobile_image_url && (
+                                    <div style={{
+                                        position: 'relative', width: '100%', height: 100, marginTop: 8,
+                                        borderRadius: 'var(--radius-md)', overflow: 'hidden', border: '1px solid var(--color-border)',
+                                    }}>
+                                        <Image src={form.mobile_image_url} alt="Mobile Preview" fill sizes="300px" style={{ objectFit: 'cover' }} />
+                                    </div>
+                                )}
+                            </div>
                         </div>
 
                         {/* Title */}

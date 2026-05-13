@@ -133,17 +133,22 @@ export default function AdminNavigationPage() {
         setSaving(true);
         setFormError('');
 
-        if (editId) {
-            const { error } = await updateNavLink(editId, form);
-            if (error) { setFormError(error); setSaving(false); return; }
-        } else {
-            const { error } = await createNavLink(form);
-            if (error) { setFormError(error); setSaving(false); return; }
-        }
+        try {
+            if (editId) {
+                const { error } = await updateNavLink(editId, form);
+                if (error) { setFormError(error); return; }
+            } else {
+                const { error } = await createNavLink(form);
+                if (error) { setFormError(error); return; }
+            }
 
-        setSaving(false);
-        setModalOpen(false);
-        await loadLinks();
+            setModalOpen(false);
+            await loadLinks();
+        } catch (err: any) {
+            setFormError(err.message || 'An error occurred while saving');
+        } finally {
+            setSaving(false);
+        }
     }
 
     async function handleDelete() {
@@ -154,6 +159,69 @@ export default function AdminNavigationPage() {
         setDeleting(false);
         setDeleteTarget(null);
         await loadLinks();
+    }
+
+    async function toggleActive(link: AdminNavLink) {
+        const nextActive = !link.is_active;
+        // Optimistic update
+        setLinks(prev => {
+            const updateItem = (item: AdminNavLink): AdminNavLink => {
+                if (item.id === link.id) return { ...item, is_active: nextActive };
+                if (item.children) return { ...item, children: item.children.map(updateItem) };
+                return item;
+            };
+            return prev.map(updateItem);
+        });
+
+        const { error } = await updateNavLink(link.id, {
+            parent_id: link.parent_id,
+            label: link.label,
+            href: link.href,
+            highlight: link.highlight,
+            is_active: nextActive,
+            sort_order: link.sort_order,
+            linked_category_id: link.linked_category_id,
+        });
+
+        if (error) {
+            alert('Error updating status: ' + error);
+            await loadLinks(); // Revert on error
+        }
+    }
+
+    async function toggleAll(active: boolean) {
+        if (!confirm(`Are you sure you want to ${active ? 'enable' : 'disable'} ALL navigation links?`)) return;
+        
+        setSaving(true);
+        // We need to flat map all links to update them
+        const allLinks: { id: string, data: NavLinkFormData }[] = [];
+        const process = (l: AdminNavLink) => {
+            allLinks.push({
+                id: l.id,
+                data: {
+                    parent_id: l.parent_id,
+                    label: l.label,
+                    href: l.href,
+                    highlight: l.highlight,
+                    is_active: active,
+                    sort_order: l.sort_order,
+                    linked_category_id: l.linked_category_id,
+                }
+            });
+            l.children?.forEach(process);
+        };
+        links.forEach(process);
+
+        // Run updates in parallel
+        const results = await Promise.all(allLinks.map(l => updateNavLink(l.id, l.data)));
+        const errors = results.filter(r => r.error);
+        
+        if (errors.length > 0) {
+            alert(`Updated with ${errors.length} errors.`);
+        }
+
+        await loadLinks();
+        setSaving(false);
     }
 
     function setField<K extends keyof NavLinkFormData>(key: K, value: NavLinkFormData[K]) {
@@ -264,19 +332,32 @@ export default function AdminNavigationPage() {
                         ) : null}
                     </td>
 
-                    {/* Status */}
+                    {/* Status Toggle */}
                     <td style={{ padding: '12px 16px', whiteSpace: 'nowrap' }}>
-                        <span style={{
-                            display: 'inline-block', width: 8, height: 8, borderRadius: '50%',
-                            background: link.is_active ? 'var(--color-success)' : 'var(--color-text-muted)',
-                            marginRight: 6,
-                        }} />
-                        <span style={{
-                            fontSize: 13,
-                            color: link.is_active ? 'var(--color-text-primary)' : 'var(--color-text-muted)',
-                        }}>
-                            {link.is_active ? 'Active' : 'Inactive'}
-                        </span>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                            <button
+                                type="button"
+                                onClick={() => toggleActive(link)}
+                                style={{
+                                    width: 36, height: 20, borderRadius: 10, border: 'none',
+                                    background: link.is_active ? 'var(--color-success, #22c55e)' : 'var(--color-bg-tertiary, #2a2a2d)',
+                                    cursor: 'pointer', position: 'relative', transition: 'background 0.2s',
+                                    padding: 0,
+                                }}
+                            >
+                                <div style={{
+                                    width: 14, height: 14, borderRadius: '50%', background: '#fff',
+                                    position: 'absolute', top: 3,
+                                    left: link.is_active ? 19 : 3, transition: 'left 0.2s',
+                                }} />
+                            </button>
+                            <span style={{
+                                fontSize: 13, fontWeight: 500,
+                                color: link.is_active ? 'var(--color-text-primary)' : 'var(--color-text-muted)',
+                            }}>
+                                {link.is_active ? 'Active' : 'Hidden'}
+                            </span>
+                        </div>
                     </td>
 
                     {/* Order */}
@@ -332,14 +413,46 @@ export default function AdminNavigationPage() {
                         Manage header navigation items and dropdown menus
                     </p>
                 </div>
-                <button onClick={() => openCreate(null)} style={{
-                    display: 'inline-flex', alignItems: 'center', gap: 8,
-                    padding: '10px 20px', background: 'var(--gradient-accent)',
-                    color: '#0a0a0b', borderRadius: 'var(--radius-md)',
-                    fontSize: 14, fontWeight: 600, border: 'none', cursor: 'pointer',
-                }}>
-                    <Plus size={16} /> Add Link
-                </button>
+                <div style={{ display: 'flex', gap: 12 }}>
+                    <div style={{
+                        display: 'flex', background: 'var(--color-bg-secondary)',
+                        border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)',
+                        overflow: 'hidden',
+                    }}>
+                        <button
+                            onClick={() => toggleAll(true)}
+                            disabled={loading || saving}
+                            style={{
+                                padding: '8px 14px', background: 'transparent', border: 'none',
+                                color: 'var(--color-success)', fontSize: 12, fontWeight: 700,
+                                cursor: 'pointer', borderRight: '1px solid var(--color-border)',
+                                opacity: loading || saving ? 0.5 : 1,
+                            }}
+                        >
+                            ENABLE ALL
+                        </button>
+                        <button
+                            onClick={() => toggleAll(false)}
+                            disabled={loading || saving}
+                            style={{
+                                padding: '8px 14px', background: 'transparent', border: 'none',
+                                color: 'var(--color-error)', fontSize: 12, fontWeight: 700,
+                                cursor: 'pointer',
+                                opacity: loading || saving ? 0.5 : 1,
+                            }}
+                        >
+                            DISABLE ALL
+                        </button>
+                    </div>
+                    <button onClick={() => openCreate(null)} style={{
+                        display: 'inline-flex', alignItems: 'center', gap: 8,
+                        padding: '10px 20px', background: 'var(--gradient-accent)',
+                        color: '#0a0a0b', borderRadius: 'var(--radius-md)',
+                        fontSize: 14, fontWeight: 600, border: 'none', cursor: 'pointer',
+                    }}>
+                        <Plus size={16} /> Add Link
+                    </button>
+                </div>
             </div>
 
             {/* Stats */}

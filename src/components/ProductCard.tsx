@@ -43,7 +43,7 @@ export default function ProductCard({ product, index = 0 }: ProductCardProps) {
                     border: '1px solid #e8e8e8',
                     transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                     cursor: 'pointer',
-                    height: '100%',
+                    height: '532px',
                 }}
                 className="product-card"
                 onMouseEnter={(e) => {
@@ -61,7 +61,7 @@ export default function ProductCard({ product, index = 0 }: ProductCardProps) {
                     style={{
                         display: 'block',
                         position: 'relative',
-                        aspectRatio: '1',
+                        height: '50%',
                         overflow: 'hidden',
                         background: '#f0f4f0',
                     }}
@@ -212,14 +212,15 @@ export default function ProductCard({ product, index = 0 }: ProductCardProps) {
                     <Link href={`/product/${product.slug}`} style={{ textDecoration: 'none' }}>
                         <h3
                             style={{
-                                fontSize: '15px',
-                                fontWeight: 600,
+                                fontSize: '18px',
+                                fontWeight: 700,
                                 color: '#1a1a1a',
                                 lineHeight: 1.4,
                                 display: '-webkit-box',
                                 WebkitLineClamp: 2,
                                 WebkitBoxOrient: 'vertical',
                                 overflow: 'hidden',
+                                textOverflow: 'ellipsis',
                                 margin: 0,
                                 fontFamily: "'Inter', sans-serif",
                             }}
@@ -232,13 +233,14 @@ export default function ProductCard({ product, index = 0 }: ProductCardProps) {
                     {product.description && (
                         <p
                             style={{
-                                fontSize: '13px',
+                                fontSize: '16px',
                                 color: '#888',
                                 lineHeight: 1.4,
                                 display: '-webkit-box',
                                 WebkitLineClamp: 2,
                                 WebkitBoxOrient: 'vertical',
                                 overflow: 'hidden',
+                                textOverflow: 'ellipsis',
                                 margin: 0,
                             }}
                         >
@@ -253,8 +255,8 @@ export default function ProductCard({ product, index = 0 }: ProductCardProps) {
                     <div
                         style={{
                             display: 'flex',
-                            alignItems: 'center',
-                            gap: '8px',
+                            flexDirection: 'column',
+                            gap: '2px',
                             marginTop: '4px',
                         }}
                     >
@@ -268,29 +270,32 @@ export default function ProductCard({ product, index = 0 }: ProductCardProps) {
                         >
                             ৳{Math.ceil(product.price)}
                         </span>
-                        {product.originalPrice && (
-                            <span
-                                style={{
-                                    fontSize: '14px',
-                                    color: '#aaa',
-                                    textDecoration: 'line-through',
-                                    fontWeight: 400,
-                                }}
-                            >
-                                ৳{Math.ceil(product.originalPrice)}
-                            </span>
-                        )}
-                        {discount > 0 && (
-                            <span
-                                style={{
-                                    fontSize: '13px',
-                                    fontWeight: 700,
-                                    color: '#0d6b3d',
-                                    marginLeft: 'auto',
-                                }}
-                            >
-                                {Math.ceil(discount)}% OFF
-                            </span>
+                        {(product.originalPrice || discount > 0) && (
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                {product.originalPrice && (
+                                    <span
+                                        style={{
+                                            fontSize: '14px',
+                                            color: '#aaa',
+                                            textDecoration: 'line-through',
+                                            fontWeight: 400,
+                                        }}
+                                    >
+                                        ৳{Math.ceil(product.originalPrice)}
+                                    </span>
+                                )}
+                                {discount > 0 && (
+                                    <span
+                                        style={{
+                                            fontSize: '13px',
+                                            fontWeight: 700,
+                                            color: '#0d6b3d',
+                                        }}
+                                    >
+                                        {Math.ceil(discount)}% OFF
+                                    </span>
+                                )}
+                            </div>
                         )}
                     </div>
 

@@ -37,46 +37,51 @@ export default function BrandsThatLead({ brands: propBrands, background = '#ffff
             <div
                 className="section-header-row"
                 style={{
-                    maxWidth: '1400px',
+                    maxWidth: '1540px',
                     margin: '0 auto',
-                    padding: '0 48px',
+                    padding: '0 80px',
+                    display: 'flex',
+                    alignItems: 'flex-start',
+                    justifyContent: 'space-between',
                     marginBottom: '28px',
                 }}
             >
-                <h2
-                    style={{
-                        fontFamily: "'Outfit', sans-serif",
-                        fontSize: '28px',
-                        fontWeight: 700,
-                        color: '#1a1a1a',
-                        marginBottom: '6px',
-                        lineHeight: 1.2,
-                    }}
-                >
-                    Brands That Lead
-                </h2>
-                <p
-                    style={{
-                        fontFamily: "'Inter', sans-serif",
-                        fontSize: '15px',
-                        color: '#888',
-                        fontWeight: 400,
-                    }}
-                >
-                    The powerhouses behind your favourites
-                </p>
+                <div>
+                    <h2
+                        style={{
+                            fontFamily: "'Outfit', sans-serif",
+                            fontSize: '28px',
+                            fontWeight: 700,
+                            color: '#1a1a1a',
+                            marginBottom: '6px',
+                            lineHeight: 1.2,
+                        }}
+                    >
+                        Brands That Lead
+                    </h2>
+                    <p
+                        style={{
+                            fontFamily: "'Inter', sans-serif",
+                            fontSize: '15px',
+                            color: '#888',
+                            fontWeight: 400,
+                        }}
+                    >
+                        The powerhouses behind your favourites
+                    </p>
+                </div>
             </div>
 
             {/* Brand Cards Grid */}
             <div
                 className="brands-grid"
                 style={{
-                    maxWidth: '1400px',
+                    maxWidth: '1540px',
                     margin: '0 auto',
-                    padding: '0 48px',
+                    padding: '0 80px',
                     display: 'grid',
                     gridTemplateColumns: 'repeat(4, 1fr)',
-                    gap: '16px',
+                    gap: '20px',
                 }}
             >
                 {brands.map((brand) => (
@@ -90,7 +95,7 @@ export default function BrandsThatLead({ brands: propBrands, background = '#ffff
                             borderRadius: '14px',
                             overflow: 'hidden',
                             background: brand.background,
-                            height: '180px',
+                            height: '200px',
                             textDecoration: 'none',
                             transition: 'transform 0.2s ease, box-shadow 0.2s ease',
                         }}
@@ -129,11 +134,12 @@ export default function BrandsThatLead({ brands: propBrands, background = '#ffff
                         <div
                             style={{
                                 position: 'absolute',
-                                right: '16px',
-                                top: '50%',
+                                right: 0,
+                                top: '44%',
                                 transform: 'translateY(-50%)',
-                                width: '45%',
+                                width: '50%',
                                 textAlign: 'center',
+                                padding: '0 12px',
                             }}
                         >
                             <h3
@@ -171,7 +177,7 @@ export default function BrandsThatLead({ brands: propBrands, background = '#ffff
                             style={{
                                 position: 'absolute',
                                 bottom: '14px',
-                                left: '50%',
+                                left: '75%',
                                 transform: 'translateX(-50%)',
                                 display: 'flex',
                                 alignItems: 'center',
@@ -180,6 +186,7 @@ export default function BrandsThatLead({ brands: propBrands, background = '#ffff
                                 backdropFilter: 'blur(4px)',
                                 padding: '6px 14px',
                                 borderRadius: '20px',
+                                transition: 'background 0.2s ease, transform 0.2s ease',
                             }}
                         >
                             <span

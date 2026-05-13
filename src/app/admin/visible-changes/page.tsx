@@ -85,16 +85,24 @@ export default function AdminVisibleChangesPage() {
         if (!form.product_id) { setFormError('Please select a linked product'); return; }
         if (!form.before_image.trim()) { setFormError('Before image URL is required'); return; }
         if (!form.after_image.trim()) { setFormError('After image URL is required'); return; }
-        setSaving(true); setFormError('');
+        setSaving(true);
+        setFormError('');
 
-        if (editId) {
-            const { error } = await updateVisibleChange(editId, form);
-            if (error) { setFormError(error); setSaving(false); return; }
-        } else {
-            const { error } = await createVisibleChange(form);
-            if (error) { setFormError(error); setSaving(false); return; }
+        try {
+            if (editId) {
+                const { error } = await updateVisibleChange(editId, form);
+                if (error) { setFormError(error); return; }
+            } else {
+                const { error } = await createVisibleChange(form);
+                if (error) { setFormError(error); return; }
+            }
+            setModalOpen(false);
+            await loadData();
+        } catch (err: any) {
+            setFormError(err.message || 'An error occurred while saving');
+        } finally {
+            setSaving(false);
         }
-        setSaving(false); setModalOpen(false); await loadData();
     }
 
     async function handleDelete() {

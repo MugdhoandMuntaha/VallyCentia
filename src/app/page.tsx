@@ -56,6 +56,7 @@ export default async function HomePage() {
   // Map hero slides
   const heroSlides = slides.map((s) => ({
     image: s.image_url,
+    mobileImage: s.mobile_image_url || undefined,
     alt: s.image_alt || s.title,
     background: s.background_color || '#f0efed',
     link: s.cta_link || undefined,

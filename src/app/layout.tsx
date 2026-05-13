@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { LayoutShell } from "@/components/LayoutShell";
+import ScrollToTop from "@/components/ScrollToTop";
 
 export const metadata: Metadata = {
   title: "Valleycentia — Premium Fashion & Accessories",
@@ -25,6 +26,7 @@ export default function RootLayout({
         />
       </head>
       <body>
+        <ScrollToTop />
         <LayoutShell>{children}</LayoutShell>
       </body>
     </html>

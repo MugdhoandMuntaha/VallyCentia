@@ -65,39 +65,43 @@ export default function VisibleChange({ items }: VisibleChangeProps) {
             <div
                 className="section-header-row"
                 style={{
-                    maxWidth: '1400px',
+                    maxWidth: '1540px',
                     margin: '0 auto',
-                    padding: '0 48px',
-                    textAlign: 'center',
+                    padding: '0 80px',
+                    display: 'flex',
+                    alignItems: 'flex-start',
+                    justifyContent: 'space-between',
                     marginBottom: '28px',
                 }}
             >
-                <h2
-                    style={{
-                        fontFamily: "'Outfit', sans-serif",
-                        fontSize: '28px',
-                        fontWeight: 700,
-                        color: '#1a1a1a',
-                        marginBottom: '6px',
-                        lineHeight: 1.2,
-                    }}
-                >
-                    Visible Change. Real Stories
-                </h2>
-                <p
-                    style={{
-                        fontFamily: "'Inter', sans-serif",
-                        fontSize: '15px',
-                        color: '#888',
-                        fontWeight: 400,
-                    }}
-                >
-                    Because results speak louder than claims
-                </p>
+                <div>
+                    <h2
+                        style={{
+                            fontFamily: "'Outfit', sans-serif",
+                            fontSize: '28px',
+                            fontWeight: 700,
+                            color: '#1a1a1a',
+                            marginBottom: '6px',
+                            lineHeight: 1.2,
+                        }}
+                    >
+                        Visible Change. Real Stories
+                    </h2>
+                    <p
+                        style={{
+                            fontFamily: "'Inter', sans-serif",
+                            fontSize: '15px',
+                            color: '#888',
+                            fontWeight: 400,
+                        }}
+                    >
+                        Because results speak louder than claims
+                    </p>
+                </div>
             </div>
 
             {/* Scrollable Cards Row */}
-            <div style={{ position: 'relative', maxWidth: '1400px', margin: '0 auto' }}>
+            <div style={{ position: 'relative', maxWidth: '1540px', margin: '0 auto' }}>
                 {/* Left Arrow */}
                 {canScrollLeft && (
                     <button
@@ -105,7 +109,7 @@ export default function VisibleChange({ items }: VisibleChangeProps) {
                         className="carousel-arrow"
                         style={{
                             position: 'absolute',
-                            left: '8px',
+                            left: '24px',
                             top: '50%',
                             transform: 'translateY(-50%)',
                             width: '44px',
@@ -139,7 +143,7 @@ export default function VisibleChange({ items }: VisibleChangeProps) {
                         className="carousel-arrow"
                         style={{
                             position: 'absolute',
-                            right: '8px',
+                            right: '24px',
                             top: '50%',
                             transform: 'translateY(-50%)',
                             width: '44px',
@@ -167,7 +171,7 @@ export default function VisibleChange({ items }: VisibleChangeProps) {
                 )}
 
                 {/* Cards Container */}
-                <div className="carousel-cards-container" style={{ padding: '0 48px', overflow: 'hidden' }}>
+                <div className="carousel-cards-container" style={{ padding: '0 80px', overflow: 'hidden' }}>
                     <div
                         ref={scrollRef}
                         onScroll={checkScroll}
